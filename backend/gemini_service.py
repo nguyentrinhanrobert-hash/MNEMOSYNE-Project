@@ -65,7 +65,7 @@ class GeminiService:
         if not api_key:
             raise ValueError("Thiếu GEMINI_API_KEY trong biến môi trường (.env)")
         self.client = genai.Client(api_key=api_key)
-        self.model_name = "gemini-2.0-flash"
+        self.model_name = "gemini-2.5-flash"
 
     def generate_chat_response(
         self, 
