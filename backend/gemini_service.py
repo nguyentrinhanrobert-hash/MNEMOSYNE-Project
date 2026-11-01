@@ -94,12 +94,13 @@ Hãy đưa ra lời tư vấn và công thức đề xuất (nếu cần điều
         response = self.client.models.generate_content(
             model=self.model_name,
             contents=user_prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                response_mime_type="application/json",
-                response_schema=RESPONSE_SCHEMA,
-                temperature=0.7,
-            ),
+            config = types.GenerateContentConfig(
+    system_instruction=SYSTEM_PROMPT,
+    response_mime_type="application/json",
+    response_schema=RESPONSE_SCHEMA,
+    temperature=0.7,
+    max_output_tokens=350,  # <-- THÊM DÒNG NÀY VÀO ĐÂY
+)
         )
 
         return json.loads(response.text)
