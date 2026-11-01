@@ -103,7 +103,7 @@ Hãy đưa ra lời tư vấn và công thức đề xuất (nếu cần điều
 )
         )
 
-       cleaned_text = response.text.strip()
+        cleaned_text = response.text.strip()
         if cleaned_text.startswith("```json"):
           cleaned_text = cleaned_text[7:]
         if cleaned_text.startswith("```"):
