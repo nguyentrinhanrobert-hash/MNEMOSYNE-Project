@@ -99,12 +99,11 @@ Hãy đưa ra lời tư vấn và công thức đề xuất (nếu cần điều
     response_mime_type="application/json",
     response_schema=RESPONSE_SCHEMA,
     temperature=0.7,
-   max_output_tokens=500,  # <-- THÊM DÒNG NÀY VÀO ĐÂY
+   max_output_tokens=1000,  # <-- THÊM DÒNG NÀY VÀO ĐÂY
 )
         )
 
-        # Làm sạch Markdown trước khi parse JSON
-        cleaned_text = response.text.strip()
+       cleaned_text = response.text.strip()
         if cleaned_text.startswith("```json"):
           cleaned_text = cleaned_text[7:]
         if cleaned_text.startswith("```"):
@@ -112,4 +111,14 @@ Hãy đưa ra lời tư vấn và công thức đề xuất (nếu cần điều
         if cleaned_text.endswith("```"):
           cleaned_text = cleaned_text[:-3]
 
-        return json.loads(cleaned_text.strip())
+        cleaned_text = cleaned_text.strip()
+
+        try:
+            return json.loads(cleaned_text)
+        except Exception as e:
+            print(f"JSON Parse Error: {e}")
+            print(f"Raw response: {cleaned_text}")
+            return {
+                "reply": "MNEMOSYNE đã ghi nhận yêu cầu của bạn. Bạn hãy gửi lại tin nhắn một lần nữa nhé!",
+                "proposed_formula": current_formula,
+            }
