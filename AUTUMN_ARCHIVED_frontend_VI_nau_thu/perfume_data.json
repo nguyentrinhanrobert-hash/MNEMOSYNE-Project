@@ -1,0 +1,114 @@
+{
+  "ingredients": [
+    {
+      "id": "BG",
+      "name": "Bergamot",
+      "note": "Đầu",
+      "family": "Citrus",
+      "teacher_max_pct": null
+    },
+    {
+      "id": "WT",
+      "name": "White Tea",
+      "note": "Giữa",
+      "family": "Aromatic",
+      "teacher_max_pct": null
+    },
+    {
+      "id": "GA",
+      "name": "Green Apple",
+      "note": "Đầu",
+      "family": "Fruity",
+      "teacher_max_pct": null
+    },
+    {
+      "id": "LV",
+      "name": "Lavender",
+      "note": "Giữa",
+      "family": "Aromatic",
+      "teacher_max_pct": null
+    },
+    {
+      "id": "GE",
+      "name": "Geranium",
+      "note": "Giữa",
+      "family": "Floral",
+      "teacher_max_pct": null
+    },
+    {
+      "id": "SA",
+      "name": "Sandalwood accord",
+      "note": "Cuối",
+      "family": "Woody",
+      "teacher_max_pct": null
+    },
+    {
+      "id": "VA",
+      "name": "Vanilla accord",
+      "note": "Cuối",
+      "family": "Amber",
+      "teacher_max_pct": null
+    },
+    {
+      "id": "ET",
+      "name": "Ethanol",
+      "note": "Dung môi",
+      "family": "Dung môi",
+      "teacher_max_pct": null
+    }
+  ],
+  "formulas": {
+    "THU-A": {
+      "Bergamot": 1.5,
+      "Green Apple": 3.0,
+      "White Tea": 6.0,
+      "Lavender": 1.25,
+      "Geranium": 2.5,
+      "Sandalwood accord": 4.5,
+      "Vanilla accord": 1.25,
+      "Ethanol": 80.0
+    },
+    "THU-B": {
+      "Bergamot": 1.25,
+      "Green Apple": 2.5,
+      "White Tea": 6.25,
+      "Lavender": 1.25,
+      "Geranium": 2.5,
+      "Sandalwood accord": 5.0,
+      "Vanilla accord": 1.25,
+      "Ethanol": 80.0
+    },
+    "THU-C": {
+      "Bergamot": 1.0,
+      "Green Apple": 2.0,
+      "White Tea": 6.5,
+      "Lavender": 1.5,
+      "Geranium": 2.5,
+      "Sandalwood accord": 5.25,
+      "Vanilla accord": 1.25,
+      "Ethanol": 80.0
+    },
+    "FINAL": {
+      "Bergamot": 1.25,
+      "Green Apple": 2.5,
+      "White Tea": 6.25,
+      "Lavender": 1.25,
+      "Geranium": 2.5,
+      "Sandalwood accord": 5.0,
+      "Vanilla accord": 1.25,
+      "Ethanol": 80.0
+    }
+  },
+  "sensory_scores": {
+    "THU-A": 4.486,
+    "THU-B": 4.01,
+    "THU-C": 4.086
+  },
+  "source_file": "Tổ 2 - Nước hoa mùa thu (1)(1).xlsx",
+  "constraints": {
+    "total_pct": 100,
+    "fragrance_pct": 20,
+    "ethanol_pct": 80,
+    "limits_verified": false
+  }
+}
