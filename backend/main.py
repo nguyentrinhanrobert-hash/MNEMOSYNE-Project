@@ -15,11 +15,7 @@ app = FastAPI(title="MNEMOSYNE Backend API", version="1.0.0")
 # Cấu hình CORS cho phép Frontend truy cập
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5500",
-        "http://127.0.0.1:5500",
-        "*"
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
