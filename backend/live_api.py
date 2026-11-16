@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import base64
 import asyncio
@@ -32,7 +33,7 @@ async def live_voice_endpoint(websocket: WebSocket):
             "Bạn là MNEMOSYNE, chuyên gia tư vấn điều chế nước hoa mùa thu bằng tiếng Việt. "
             "Hãy trò chuyện tự nhiên, ấm áp, ngắn gọn và giàu cảm xúc về ký ức mùi hương. "
             f"Công thức hiện tại của người dùng trên bàn pha chế (%): {json.dumps(current_formula, ensure_ascii=False)}. "
-            "Lưu ý: Bạn chỉ tư vấn và gợi ý điều chỉnh bằng lời nói, không tự ý thay đổi số liệu trên giao diện."
+            "Lưu ý: Chỉ trả lời bằng tiếng Việt tự nhiên, không bao giờ xuất văn bản suy nghĩ bằng tiếng Anh."
         )
 
         client = genai.Client(api_key=api_key, http_options={"api_version": "v1alpha"})
@@ -80,16 +81,18 @@ async def live_voice_endpoint(websocket: WebSocket):
                         if server_content:
                             if server_content.interrupted:
                                 await websocket.send_json({"type": "interrupted"})
-                            
-                            # Gửi phụ đề giọng nói của AI về Frontend
-                            if getattr(server_content, "output_transcription", None) and server_content.output_transcription.text:
-                                await websocket.send_json({
-                                    "type": "transcript",
-                                    "role": "assistant",
-                                    "text": server_content.output_transcription.text
-                                })
 
-                            # Gửi phụ đề giọng nói của người dùng về Frontend
+                            # Chỉ lấy phụ đề chính xác từ giọng nói đầu ra của AI
+                            if getattr(server_content, "output_transcription", None) and server_content.output_transcription.text:
+                                clean_text = re.sub(r"\*\*[^*]+\*\*\s*", "", server_content.output_transcription.text)
+                                if clean_text:
+                                    await websocket.send_json({
+                                        "type": "transcript",
+                                        "role": "assistant",
+                                        "text": clean_text
+                                    })
+
+                            # Lấy phụ đề giọng nói của người dùng
                             if getattr(server_content, "input_transcription", None) and server_content.input_transcription.text:
                                 await websocket.send_json({
                                     "type": "transcript",
@@ -97,6 +100,7 @@ async def live_voice_endpoint(websocket: WebSocket):
                                     "text": server_content.input_transcription.text
                                 })
 
+                            # Chỉ gửi dữ liệu âm thanh, bỏ qua part.text (vì part.text chứa suy nghĩ nội bộ tiếng Anh)
                             if server_content.model_turn:
                                 for part in server_content.model_turn.parts:
                                     if part.inline_data and part.inline_data.data:
@@ -105,12 +109,6 @@ async def live_voice_endpoint(websocket: WebSocket):
                                             "type": "audio",
                                             "data": b64_audio,
                                             "sample_rate": 24000
-                                        })
-                                    elif getattr(part, "text", None):
-                                        await websocket.send_json({
-                                            "type": "transcript",
-                                            "role": "assistant",
-                                            "text": part.text
                                         })
 
                             if server_content.turn_complete:
