@@ -37,9 +37,9 @@ async def live_voice_endpoint(websocket: WebSocket):
             "Lưu ý: Bạn chỉ tư vấn và gợi ý điều chỉnh bằng lời nói, không tự ý thay đổi số liệu trên giao diện."
         )
 
-        # Khởi tạo client với api_version='v1alpha' cho Live API
+       # Khởi tạo client với api_version='v1alpha' cho Live API
         client = genai.Client(api_key=api_key, http_options={"api_version": "v1alpha"})
-       config = types.LiveConnectConfig(
+        config = types.LiveConnectConfig(
             response_modalities=[types.Modality.AUDIO],
             system_instruction=types.Content(
                 parts=[types.Part.from_text(text=system_instruction)]
