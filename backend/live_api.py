@@ -38,6 +38,8 @@ async def live_voice_endpoint(websocket: WebSocket):
         client = genai.Client(api_key=api_key, http_options={"api_version": "v1alpha"})
         config = types.LiveConnectConfig(
             response_modalities=[types.Modality.AUDIO],
+            output_audio_transcription=types.AudioTranscriptionConfig(),
+            input_audio_transcription=types.AudioTranscriptionConfig(),
             system_instruction=types.Content(
                 parts=[types.Part.from_text(text=system_instruction)]
             ),
@@ -78,6 +80,23 @@ async def live_voice_endpoint(websocket: WebSocket):
                         if server_content:
                             if server_content.interrupted:
                                 await websocket.send_json({"type": "interrupted"})
+                            
+                            # Gửi phụ đề giọng nói của AI về Frontend
+                            if getattr(server_content, "output_transcription", None) and server_content.output_transcription.text:
+                                await websocket.send_json({
+                                    "type": "transcript",
+                                    "role": "assistant",
+                                    "text": server_content.output_transcription.text
+                                })
+
+                            # Gửi phụ đề giọng nói của người dùng về Frontend
+                            if getattr(server_content, "input_transcription", None) and server_content.input_transcription.text:
+                                await websocket.send_json({
+                                    "type": "transcript",
+                                    "role": "user",
+                                    "text": server_content.input_transcription.text
+                                })
+
                             if server_content.model_turn:
                                 for part in server_content.model_turn.parts:
                                     if part.inline_data and part.inline_data.data:
@@ -87,6 +106,13 @@ async def live_voice_endpoint(websocket: WebSocket):
                                             "data": b64_audio,
                                             "sample_rate": 24000
                                         })
+                                    elif getattr(part, "text", None):
+                                        await websocket.send_json({
+                                            "type": "transcript",
+                                            "role": "assistant",
+                                            "text": part.text
+                                        })
+
                             if server_content.turn_complete:
                                 await websocket.send_json({"type": "turn_complete"})
                 except Exception as e:
