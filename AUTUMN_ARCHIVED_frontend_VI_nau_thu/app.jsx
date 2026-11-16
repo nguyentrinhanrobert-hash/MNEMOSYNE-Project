@@ -1,5 +1,5 @@
 const {useState,useEffect,useRef}=React;
-const API_BASE=window.MNEMOSYNE_API_BASE||'[https://mnemosyne-project.onrender.com](https://mnemosyne-project.onrender.com)';
+const API_BASE = window.MNEMOSYNE_API_BASE || 'https://mnemosyne-project.onrender.com';
 const round=(x)=>Math.round((Number(x)||0)*1000)/1000;
 const sum=(xs)=>xs.reduce((a,b)=>a+Number(b||0),0);
 function validate(formula,ingredients){if(!formula)return {valid:false,errors:['Chưa có công thức.']};const errors=[];const names=ingredients.map(x=>x.name);for(const key of Object.keys(formula))if(!names.includes(key))errors.push('Nguyên liệu không có trong dữ liệu: '+key);for(const name of names){const value=formula[name];if(typeof value!=='number'||!Number.isFinite(value)||value<0)errors.push('Tỉ lệ không hợp lệ: '+name)}if(errors.length)return {valid:false,errors};const total=sum(Object.values(formula)),ethanol=formula.Ethanol,fragrance=total-ethanol;if(Math.abs(total-100)>.001)errors.push('Tổng phải bằng 100% (hiện '+round(total)+'%).');if(Math.abs(fragrance-20)>.001)errors.push('Tổng nguyên liệu tạo hương phải bằng 20%.');if(Math.abs(ethanol-80)>.001)errors.push('Ethanol phải bằng 80%.');for(const i of ingredients){if(i.teacher_max_pct!=null&&formula[i.name]>i.teacher_max_pct)errors.push(i.name+' vượt giới hạn GV.')}return {valid:errors.length===0,errors}}
