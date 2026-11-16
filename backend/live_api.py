@@ -12,7 +12,6 @@ live_router = APIRouter()
 async def live_voice_endpoint(websocket: WebSocket):
     await websocket.accept()
     api_key = os.getenv("GEMINI_API_KEY")
-    # Lấy model từ biến môi trường, mặc định dùng dòng native audio của Gemini 2.5
     live_model = os.getenv("GEMINI_LIVE_MODEL", "gemini-2.5-flash-native-audio-preview-09-2025")
 
     if not api_key:
@@ -21,7 +20,6 @@ async def live_voice_endpoint(websocket: WebSocket):
         return
 
     try:
-        # Chờ gói tin 'start' từ frontend trước khi mở phiên Gemini Live
         init_raw = await websocket.receive_text()
         init_msg = json.loads(init_raw)
         if init_msg.get("type") != "start":
@@ -37,7 +35,6 @@ async def live_voice_endpoint(websocket: WebSocket):
             "Lưu ý: Bạn chỉ tư vấn và gợi ý điều chỉnh bằng lời nói, không tự ý thay đổi số liệu trên giao diện."
         )
 
-       # Khởi tạo client với api_version='v1alpha' cho Live API
         client = genai.Client(api_key=api_key, http_options={"api_version": "v1alpha"})
         config = types.LiveConnectConfig(
             response_modalities=[types.Modality.AUDIO],
@@ -52,7 +49,6 @@ async def live_voice_endpoint(websocket: WebSocket):
         )
 
         async with client.aio.live.connect(model=live_model, config=config) as session:
-            # Báo cho frontend biết đã sẵn sàng thu âm
             await websocket.send_json({"type": "ready"})
 
             async def receive_from_client():
@@ -62,13 +58,18 @@ async def live_voice_endpoint(websocket: WebSocket):
                         msg = json.loads(raw)
                         if msg.get("type") == "audio" and msg.get("data"):
                             pcm_bytes = base64.b64decode(msg["data"])
-                            await session.send_realtime_input(
-                                audio=types.Blob(data=pcm_bytes, mime_type="audio/pcm;rate=16000")
+                            await session.send(
+                                input={"data": pcm_bytes, "mime_type": "audio/pcm;rate=16000"},
+                                end_of_turn=False
                             )
                 except WebSocketDisconnect:
                     pass
                 except Exception as e:
-                    print(f"[Live Client Error] {e}")
+                    print(f"[Live Client Error] {e}", flush=True)
+                    try:
+                        await websocket.send_json({"type": "error", "message": f"Lỗi gửi âm thanh: {e}"})
+                    except Exception:
+                        pass
 
             async def receive_from_gemini():
                 try:
@@ -89,13 +90,12 @@ async def live_voice_endpoint(websocket: WebSocket):
                             if server_content.turn_complete:
                                 await websocket.send_json({"type": "turn_complete"})
                 except Exception as e:
-                    print(f"[Live Gemini Error] {e}")
+                    print(f"[Live Gemini Error] {e}", flush=True)
                     try:
-                        await websocket.send_json({"type": "error", "message": str(e)})
+                        await websocket.send_json({"type": "error", "message": f"Lỗi Gemini Live: {e}"})
                     except Exception:
                         pass
 
-            # Chạy song song 2 luồng nhận/gửi âm thanh
             tasks = [
                 asyncio.create_task(receive_from_client()),
                 asyncio.create_task(receive_from_gemini()),
@@ -105,9 +105,9 @@ async def live_voice_endpoint(websocket: WebSocket):
                 task.cancel()
 
     except WebSocketDisconnect:
-        print("[Live] Client ngắt kết nối.")
+        print("[Live] Client ngắt kết nối.", flush=True)
     except Exception as e:
-        print(f"[Live Session Error] {e}")
+        print(f"[Live Session Error] {e}", flush=True)
         try:
             await websocket.send_json({"type": "error", "message": str(e)})
         except Exception:
