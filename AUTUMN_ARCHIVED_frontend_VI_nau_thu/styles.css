@@ -5,3 +5,9 @@ body{background:radial-gradient(ellipse at 78% 24%,#473029 0,transparent 43%),va
 .panel{border-radius:2px;background:#2c221f}button.primary,button.secondary,.tabs button,textarea,input,select,.chat,.bubble,.stat,.proposal{border-radius:3px}
 .brand{letter-spacing:2px}.hero{padding:72px 0 45px;min-height:285px}.hero h1{font-size:clamp(55px,7vw,91px);font-weight:400;line-height:1}.quote{color:#d1ae7b}.panel h2{font-weight:400;font-size:36px}.top{padding:25px 0}.bubble.assistant{background:#382922}.bubble.user{background:#664330}
 @media(max-width:800px){.hero{min-height:auto;padding:40px 0 25px}.hero h1{font-size:58px}}
+
+/* MNEMOSYNE LIVE */
+.live-panel{border:1px solid #8b6c52;border-radius:10px;padding:16px;margin:14px 0;background:rgba(122,82,56,.12)}
+.live-title{font-family:'Cormorant Garamond',serif;font-size:24px;letter-spacing:.07em;color:#dfc19a}
+.live-pill{font:11px 'DM Sans',sans-serif;letter-spacing:.12em;border:1px solid #93785e;padding:4px 8px;border-radius:20px;margin-left:10px}
+.live-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.live-notice{font-size:12px;color:#d8c0a7;margin:10px 0 0}
