@@ -20,6 +20,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+from live_api import live_router
+
+app.include_router(live_router)
 
 try:
     gemini_service = GeminiService()
